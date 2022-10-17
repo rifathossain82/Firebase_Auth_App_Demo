@@ -28,7 +28,6 @@ class FirebaseAuthentication {
     }
   }
 
-
   verifyOTP(String otp) async{
     try{
       PhoneAuthCredential credential = PhoneAuthProvider.credential(

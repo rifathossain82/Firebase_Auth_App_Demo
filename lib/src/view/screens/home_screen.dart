@@ -32,9 +32,4 @@ class HomeScreen extends StatelessWidget {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const LoginScreen())));
     }
   }
-
-
-  /// here is today
-/// I will try to update more functionality if possible inshallah
-/// thank you..............
 }

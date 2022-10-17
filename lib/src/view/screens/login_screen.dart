@@ -22,59 +22,64 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login Screen'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            KTextField(
-              controller: phoneController,
-              hintText: 'Enter Phone Number',
-            ),
-            const SizedBox(height: 16,),
-            Visibility(
-              visible: codeVisibility,
-              child: KTextField(
-                controller: codeController,
-                hintText: 'Enter Code',
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: size.height * 0.05,),
+              KTextField(
+                controller: phoneController,
+                hintText: 'Enter Phone Number',
               ),
-            ),
-            const SizedBox(height: 16,),
-            KButton(
-              onPressed: ()async{
-                try{
-                  if(codeVisibility){
-                    if(codeController.text.isEmpty){
-                      KSnackBar(context, 'Please Enter OTP!');
-                    }else{
-                      await firebaseAuthentication.verifyOTP(codeController.text);
-                      if(mounted){
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
-                      }
-                    }
-                  }else{
-                    if(phoneController.text.isEmpty){
-                      KSnackBar(context, 'Please Enter Valid Phone Number!');
-                    }else{
-                      firebaseAuthentication.loginWithPhone(phoneController.text);
-                      codeVisibility = true;
-                      setState(() {});
-                    }
-
-                  }
-                }catch(e){
-                  KSnackBar(context, 'Failed To Login');
-                }
-              },
-              title: codeVisibility? 'Verify' : 'Login',
-            )
-          ],
+              const SizedBox(height: 16,),
+              Visibility(
+                visible: codeVisibility,
+                child: KTextField(
+                  controller: codeController,
+                  hintText: 'Enter Code',
+                ),
+              ),
+              const SizedBox(height: 16,),
+              KButton(
+                onPressed: loginOrVerify,
+                title: codeVisibility? 'Verify' : 'Login',
+              )
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void loginOrVerify()async{
+    try{
+      if(codeVisibility){
+        if(codeController.text.isEmpty){
+          KSnackBar(context, 'Please Enter OTP!');
+        }else{
+          await firebaseAuthentication.verifyOTP(codeController.text);
+          if(mounted){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
+          }
+        }
+      }else{
+        if(phoneController.text.isEmpty){
+          KSnackBar(context, 'Please Enter Valid Phone Number!');
+        }else{
+          firebaseAuthentication.loginWithPhone(phoneController.text);
+          codeVisibility = true;
+          setState(() {});
+        }
+
+      }
+    }catch(e){
+      KSnackBar(context, 'Failed To Login');
+    }
   }
 }
